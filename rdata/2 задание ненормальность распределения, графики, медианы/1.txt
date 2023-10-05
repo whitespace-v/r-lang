@@ -1,0 +1,43 @@
+is - logic is
+na - not avaliable
+omit = get count 
+sum = sum
+read.csv("path")
+
+which() - get some 
+
+// get library 
+install.packages(pkgs="nortest")
+//use library  (nortest) lillie & cym
+library("nortest")
+
+// методы проверки на нормальность
+shapiro.test(data$visits)
+ks.test(data$visits,pnorm)
+lillie.test(data$visits)
+cvm.test(data$visits)
+pearson.test(data$visits)
+
+//создание нормально-распределенную выборку данных из векторов по Гауссу (n-кол-во, mean=среднее, sd= стандартное отклоенение)
+x <- rnorm(n=50, mean=10, sd=3)
+
+// create histogram with 1 arg - data, breaks - number of colums, freq - false horisontal 
+hist(X, breaks = 20, freq = FALSE, col = "lightblue", xlab = "Переменная X", ylab = "Плотность вероятности", main = "Гистограмма, совмещенная с кривой плотности")
+
+//create line, density() - получить плотность вероятности 
+lines(density(X), col = "red", lwd = 2)
+
+
+// devide plots winodw (c function is a helper to post many parameters in signle argument) ,(rows, columns)
+par(mfrow=c(1,2))
+
+ИКР - межквартильный разхмах 
+
+Выброс (англ. outlier), промах — в статистике результат измерения, выделяющийся из общей выборки.
+
+квартиль - 4й квантиль
+
+перцентиль - n/100 квантиль
+
+
+
