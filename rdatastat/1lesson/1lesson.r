@@ -1,9 +1,9 @@
 # генерируем датасет из 30 данных, с медианой mean и 
-eps1 <-rnorm(100, mean=1, sd=2.27) 
-eps2 <-rnorm(100, mean=0, sd=3.07) 
+eps1 <-rnorm(30, mean=1, sd=2.27) 
+eps2 <-rnorm(30, mean=0, sd=3.07) 
 
 #??
-t=seq(from=3, to=300, by=1)
+t=seq(from=3, to=32, by=1)
 
 xrow<- 1+2.05*t+eps1
 yrow<- 2+1.38*t+eps2
@@ -24,12 +24,13 @@ cor(t,yrow,method="kendall")
 
 
 #как ведут себя ошибки?
+cor(t,eps1,method="spearman")
 cor(t,eps1,method="kendall")
-cor(t,eps2,method="spearman")
+
 
 #какой вывод ? - не устойчивый, нет тенденции; колебания хаотичны
 
-acf(xrow,lag.max=7,plot=TRUE)
+acf(xrow,lag.max=25,plot=TRUE)
 acf(yrow,lag.max=7,plot=TRUE)
 
 #ошибки 
@@ -57,8 +58,17 @@ Tmodel<-lm(bbroad$butterbroad~bbroad$`t=time`) #модель тренда
 summary(Tmodel) #модель значима и очень точная, коэф детерминирован
 head(Tmodel$residuals,12)#ошибки модели
 plot(bbroad$`t=time`,bbroad$butterbroad,col='green',pch=2)
-points(bbroad$`t=time`,bbroad$fitted.values,col='red',pch=5)
+points(bbroad$`t=time`,Tmodel$fitted.values,col='red',pch=5)
 cor(Tmodel$residuals,bbroad$`t=time`,method='spearman')
 mean(Tmodel$residuals^2)/mean(bbroad$butterbroad^2)
 acf(bbroad$butterbroad,lag.max=12,plot=TRUE)
 acf(Tmodel$residuals,lag.max=12,plot=TRUE)
+
+# построение модели тренд + колебания (сезонность)
+
+library('zoo')
+bb=seq(from=1,to=120,by=1) # создаем вектор
+bb <- bbroad$butterbroad- Tmodel$fitted.values #вектор остатков модели - совпадает с ошибками
+
+#остатки модели содержать 
+# скользящее окно - прием 
