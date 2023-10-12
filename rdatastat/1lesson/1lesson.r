@@ -30,6 +30,7 @@ cor(t,eps1,method="kendall")
 
 #какой вывод ? - не устойчивый, нет тенденции; колебания хаотичны
 
+#автокорелляционная функция
 acf(xrow,lag.max=25,plot=TRUE)
 acf(yrow,lag.max=7,plot=TRUE)
 
@@ -60,15 +61,36 @@ head(Tmodel$residuals,12)#ошибки модели
 plot(bbroad$`t=time`,bbroad$butterbroad,col='green',pch=2)
 points(bbroad$`t=time`,Tmodel$fitted.values,col='red',pch=5)
 cor(Tmodel$residuals,bbroad$`t=time`,method='spearman')
+#
 mean(Tmodel$residuals^2)/mean(bbroad$butterbroad^2)
 acf(bbroad$butterbroad,lag.max=12,plot=TRUE)
 acf(Tmodel$residuals,lag.max=12,plot=TRUE)
 
 # построение модели тренд + колебания (сезонность)
 
-library('zoo')
-bb=seq(from=1,to=120,by=1) # создаем вектор
-bb <- bbroad$butterbroad- Tmodel$fitted.values #вектор остатков модели - совпадает с ошибками
-
+# построение модели тренд+ колебания (сезонность)
+library("zoo")# вычисленние скользящих средних
+bb=seq(from=1,to=120,by=1)# создаем вектор
+bb<-bbroad$butterbroad- Tmodel$fitted.values # вектор остатков модели - совпадает с ошибками
+# остатки модели содержат все колебания - и с лучайные и периодические
+head(bb)
+movbb<-rollmean(bb,5,align = c("center"))# модель скользящего сглаживания
+# модель скользящего сглаживания применяется трейдерами
+plot(bbroad$`t=time`,(Tmodel$fitted.values+movbb),col="blue")# Уточненный тренд
+points(bbroad$`t=time`,bbroad$butterbroad,col="brown",pch=1)# истинные значения
 #остатки модели содержать 
 # скользящее окно - прием 
+
+
+food<-read_xlsx('./foodspriceinRussia.xlsx')
+
+head(food,4)
+
+#присваеваем названия колонкам
+names(food)<-c("Y","butter","milk","cheese", "sugar","tea","porreage","bread")
+
+cor(food$Y,food$sugar,method = "spearman") #выраженная устойчивая тенденция! тренд есть 
+cor(food$Y,food$sugar,method = "kendall")# периодические колебания, но очень слабые
+plot(food$Y,food$sugar,col="red",pch=3)#график исходных данных
+summary(sugarT<-lm(sugar~Y,data = food))# присваиваем тренд sugarT! 
+points(food$Y,sugarT$fitted.values,col="black",pch=5) # тренд на графике
